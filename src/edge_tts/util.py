@@ -53,6 +53,7 @@ async def _run_tts(args: UtilArgs) -> None:
         volume=args.volume,
         pitch=args.pitch,
         proxy=args.proxy,
+        Boundary="SentenceBoundary"
     )
     submaker = SubMaker()
     try:
