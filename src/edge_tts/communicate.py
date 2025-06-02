@@ -376,6 +376,9 @@ class Communicate:
         for meta_obj in json.loads(data)["Metadata"]:
             meta_type = meta_obj["Type"]
             if meta_type in ("WordBoundary", "SentenceBoundary"):
+                if meta_type == "SentenceBoundary" and meta_obj["Data"]["Offset"] == 1000000:  # first line
+                    meta_obj["Data"]["Offset"] = 0
+                    meta_obj["Data"]["Duration"] += 500_000
                 current_offset = (
                     meta_obj["Data"]["Offset"] + self.state["offset_compensation"]
                 )
@@ -473,7 +476,8 @@ class Communicate:
                         # well for now, but we might ultimately need to use a
                         # more sophisticated method like using ffmpeg to get
                         # the actual duration of the audio data.
-                        self.state["offset_compensation"] += 8_750_000
+                        if parsed_metadata["type"] != "SentenceBoundary":
+                            self.state["offset_compensation"] += 8_750_000
 
                         # Exit the loop so we can send the next SSML request.
                         break
